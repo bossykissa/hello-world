@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Where does this note go?</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #f5f4f0;
+    color: #1a1a18;
+    padding: 24px 16px 48px;
+    min-height: 100vh;
+  }
+  .container { max-width: 560px; margin: 0 auto; }
+  h1 {
+    font-size: 20px;
+    font-weight: 500;
+    margin-bottom: 6px;
+    color: #1a1a18;
+  }
+  .subtitle {
+    font-size: 13px;
+    color: #73726c;
+    margin-bottom: 24px;
+  }
+
+  /* Question screen */
+  .question {
+    font-size: 16px;
+    font-weight: 500;
+    color: #1a1a18;
+    margin-bottom: 14px;
+    line-height: 1.5;
+  }
+  .options { display: flex; flex-direction: column; gap: 8px; }
+  .opt {
+    padding: 12px 16px;
+    border: 1px solid #d3d1c7;
+    border-radius: 8px;
+    background: #fff;
+    color: #1a1a18;
+    font-size: 14px;
+    text-align: left;
+    cursor: pointer;
+    line-height: 1.45;
+    transition: border-color .12s, background .12s;
+  }
+  .opt:hover { border-color: #888780; background: #f9f8f4; }
+  .back-btn {
+    margin-top: 16px;
+    font-size: 13px;
+    color: #888780;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    text-decoration: underline;
+  }
+
+  /* Destination card */
+  .card {
+    border-radius: 10px;
+    border: 1.5px solid;
+    padding: 20px;
+  }
+  .card.d { background: #fef8ec; border-color: #e9c46a; }
+  .card.o { background: #edf7f2; border-color: #52b788; }
+  .card.n { background: #eef2fb; border-color: #7b9cda; }
+
+  .tool-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+  }
+  .card.d .tool-label { color: #b5842a; }
+  .card.o .tool-label { color: #2d7a52; }
+  .card.n .tool-label { color: #3a5fa8; }
+
+  .folder-name {
+    font-size: 18px;
+    font-weight: 500;
+    color: #1a1a18;
+    margin-bottom: 14px;
+    line-height: 1.3;
+  }
+
+  .rules { list-style: none; margin-bottom: 14px; }
+  .rules li {
+    font-size: 13px;
+    color: #5f5e5a;
+    padding: 3px 0 3px 14px;
+    position: relative;
+    line-height: 1.45;
+  }
+  .rules li::before { content: '·'; position: absolute; left: 0; color: #b4b2a9; }
+
+  .promote-note {
+    font-size: 12px;
+    color: #73726c;
+    font-style: italic;
+    line-height: 1.55;
+    margin-bottom: 14px;
+  }
+
+  .restart-btn {
+    font-size: 12px;
+    padding: 7px 13px;
+    border-radius: 6px;
+    border: 1px solid #d3d1c7;
+    background: #fff;
+    cursor: pointer;
+    color: #73726c;
+    transition: border-color .12s;
+  }
+  .restart-btn:hover { border-color: #888780; }
+
+  /* Defaults panel */
+  .defaults {
+    margin-top: 16px;
+    padding: 12px 14px;
+    background: #fff;
+    border: 1px solid #d3d1c7;
+    border-radius: 8px;
+  }
+  .defaults-title {
+    font-size: 12px;
+    font-weight: 500;
+    color: #5f5e5a;
+    margin-bottom: 7px;
+  }
+  .defaults ul { list-style: none; }
+  .defaults li {
+    font-size: 12px;
+    color: #888780;
+    padding: 2px 0 2px 12px;
+    position: relative;
+    line-height: 1.45;
+  }
+  .defaults li::before { content: '·'; position: absolute; left: 0; }
+
+  .footer {
+    margin-top: 14px;
+    font-size: 12px;
+    color: #b4b2a9;
+    padding-top: 12px;
+    border-top: 1px solid #e8e7e1;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    body { background: #1c1c1a; color: #d3d1c7; }
+    h1 { color: #d3d1c7; }
+    .subtitle { color: #888780; }
+    .question { color: #d3d1c7; }
+    .opt { background: #2c2c2a; border-color: #444441; color: #d3d1c7; }
+    .opt:hover { background: #343432; border-color: #5f5e5a; }
+    .back-btn { color: #888780; }
+    .card.d { background: #2e260e; border-color: #8a6520; }
+    .card.o { background: #0d2b1c; border-color: #2d7a52; }
+    .card.n { background: #0e1a33; border-color: #3a5fa8; }
+    .card.d .tool-label { color: #e9c46a; }
+    .card.o .tool-label { color: #52b788; }
+    .card.n .tool-label { color: #7b9cda; }
+    .folder-name { color: #d3d1c7; }
+    .rules li { color: #888780; }
+    .promote-note { color: #73726c; }
+    .restart-btn { background: #2c2c2a; border-color: #444441; color: #888780; }
+    .restart-btn:hover { border-color: #5f5e5a; }
+    .defaults { background: #2c2c2a; border-color: #444441; }
+    .defaults-title { color: #888780; }
+    .defaults li { color: #73726c; }
+    .footer { color: #5f5e5a; border-top-color: #2c2c2a; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Where does this note go?</h1>
+  <p class="subtitle">Answer one question at a time.</p>
+  <div id="screen"></div>
+  <div class="defaults">
+    <p class="defaults-title">Emergency defaults</p>
+    <ul>
+      <li>Unsure? Day One first. Apply this tree when the thought settles.</li>
+      <li>Unsure which Obsidian folder? Always 01 Ideas. Move it later.</li>
+      <li>Never choose between more than two folders at once.</li>
+      <li>Books only in Books. Beliefs only in Beliefs. Reference never mixes with thinking.</li>
+    </ul>
+  </div>
+  <p class="footer">Still using Apple Notes? Apply this tree, then move the note to the right place.</p>
+</div>
+
+<script>
+var T = {
+  start: {
+    q: 'What kind of note is this?',
+    back: null,
+    opts: [
+      ['A feeling, mood, daily event, or personal reaction', 'day_one'],
+      ['A thought, idea, learning, or reference', 's2'],
+      ['Something operational — SOPs, checklists, processes, templates', 'notion'],
+      ['Not sure — somewhere between a feeling and a thought', 'capture']
+    ]
+  },
+  s2: {
+    q: 'Is this content you want to share externally?',
+    back: 'start',
+    opts: [
+      ['Yes — a post, email, blog, or essay for an audience', 'content_idea'],
+      ['No — this is for my own thinking or reference', 's3']
+    ]
+  },
+  s3: {
+    q: 'What type of thinking is it?',
+    back: 's2',
+    opts: [
+      ['About a specific book', 'books'],
+      ['A quote, belief, or identity anchor', 'beliefs'],
+      ['Reference — research, meeting notes, transcripts, data', 'ref'],
+      ['An exploratory or unfinished thought', 'ideas'],
+      ['A clear lesson — I can say "I learned that..."', 'learnings'],
+      ['Long-form reflection or essay (more than a page)', 'writing'],
+      ['Not sure', 'ideas']
+    ]
+  }
+};
+
+var D = {
+  day_one: {
+    cls: 'd', tool: 'Day One', folder: 'Daily journal',
+    rules: [
+      'Feelings, moods, reactions, personal events',
+      'Emotional business thoughts (founder stress, doubt, overwhelm)',
+      'Raw messy thoughts you need to process first',
+      'Time-based and tied to your inner state'
+    ],
+    note: 'If an insight crystallises later, promote it to Obsidian — 01 Ideas or 02 Learnings.'
+  },
+  capture: {
+    cls: 'd', tool: 'Day One', folder: 'Daily journal — capture first',
+    rules: [
+      'Write it out without pressure to categorise',
+      'Come back with this tree once the thought settles',
+      'A feeling can become a learning — that is fine'
+    ],
+    note: null
+  },
+  content_idea: {
+    cls: 'o', tool: 'Obsidian', folder: '01 Ideas — Content Idea Note',
+    rules: [
+      'Use the content idea template',
+      'Fill Core Idea and Core Message first',
+      'Add format branches (blog, email, IG, short-form) as they develop',
+      'Leave ARC / Series / Mental Job blank until the idea is active',
+      'Move to 05 Publish when ready to go out'
+    ],
+    note: null
+  },
+  books: {
+    cls: 'o', tool: 'Obsidian', folder: '03 Books',
+    rules: [
+      'One note per book',
+      'Only: ideas that changed your thinking, passages you reacted to, concepts to apply',
+      'Bullet points only — no summaries',
+      'Link to Ideas or Learnings if needed',
+      'Books are inputs. Insights live elsewhere.'
+    ],
+    note: null
+  },
+  beliefs: {
+    cls: 'o', tool: 'Obsidian', folder: '06 Beliefs and Anchors',
+    rules: [
+      'Title = the statement itself',
+      'Body = empty or one line max',
+      'For remembering, not thinking through',
+      'No debating inside the note'
+    ],
+    note: null
+  },
+  ref: {
+    cls: 'o', tool: 'Obsidian', folder: '03 Reference',
+    rules: [
+      'Meeting notes, research, transcripts, benchmarks, ChatGPT outputs',
+      'Clear boring titles — dates allowed',
+      'No pressure to polish',
+      'Searchable; does not need linking'
+    ],
+    note: null
+  },
+  ideas: {
+    cls: 'o', tool: 'Obsidian', folder: '01 Ideas',
+    rules: [
+      'One idea per note',
+      'Exploratory — no conclusions needed',
+      'Patterns you are noticing, questions you are sitting with',
+      'Link later if useful',
+      'Default Obsidian destination when unsure'
+    ],
+    note: null
+  },
+  learnings: {
+    cls: 'o', tool: 'Obsidian', folder: '02 Learnings',
+    rules: [
+      'Must contain a clear takeaway',
+      'Can finish: "I learned that..."',
+      'Short and direct',
+      'Post-mortems, reflections with judgement'
+    ],
+    note: null
+  },
+  writing: {
+    cls: 'o', tool: 'Obsidian', folder: '04 Writing',
+    rules: [
+      'Long-form thinking-through-writing',
+      'More than a page',
+      'Reads like an essay or reflection',
+      'Not yet shaped for an audience — that comes next'
+    ],
+    note: null
+  },
+  notion: {
+    cls: 'n', tool: 'Notion', folder: 'Business knowledge base',
+    rules: [
+      'Finished, repeatable, or teachable',
+      'SOPs, checklists, templates, brand guidelines',
+      'Strategy — final decisions only, not drafts',
+      'If someone else could follow it, it belongs here'
+    ],
+    note: null
+  }
+};
+
+var hist = ['start'];
+
+function draw(id) {
+  var el = document.getElementById('screen');
+  if (T[id]) {
+    var step = T[id];
+    var opts = step.opts.map(function(o) {
+      return '<button class="opt" onclick="go(\'' + o[1] + '\')">' + o[0] + '</button>';
+    }).join('');
+    var back = step.back
+      ? '<button class="back-btn" onclick="goback()">Back</button>'
+      : '';
+    el.innerHTML = '<p class="question">' + step.q + '</p><div class="options">' + opts + '</div>' + back;
+  } else if (D[id]) {
+    var d = D[id];
+    var rules = d.rules.map(function(r) { return '<li>' + r + '</li>'; }).join('');
+    var note = d.note ? '<p class="promote-note">' + d.note + '</p>' : '';
+    el.innerHTML = '<div class="card ' + d.cls + '">'
+      + '<p class="tool-label">' + d.tool + '</p>'
+      + '<p class="folder-name">' + d.folder + '</p>'
+      + '<ul class="rules">' + rules + '</ul>'
+      + note
+      + '<button class="restart-btn" onclick="restart()">Start over</button>'
+      + '</div>';
+  }
+}
+
+function go(id) { hist.push(id); draw(id); }
+function goback() { hist.pop(); draw(hist[hist.length - 1]); }
+function restart() { hist = ['start']; draw('start'); }
+
+draw('start');
+</script>
+</body>
+</html>
