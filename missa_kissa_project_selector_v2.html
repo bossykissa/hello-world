@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MISSA & KISSA — Which project?</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f5f4f0;
+      --surface: #ffffff;
+      --text: #1a1a18;
+      --muted: #73726c;
+      --muted-2: #888780;
+      --border: #d3d1c7;
+      --border-strong: #b9b6ab;
+      --hover: #f9f8f4;
+
+      --strategy-bg: #fef8ec;
+      --strategy-border: #e9c46a;
+      --strategy-label: #b5842a;
+
+      --content-bg: #edf7f2;
+      --content-border: #52b788;
+      --content-label: #2d7a52;
+
+      --ops-bg: #eef2fb;
+      --ops-border: #7b9cda;
+      --ops-label: #3a5fa8;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 24px 16px 48px;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 560px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-size: 20px;
+      font-weight: 500;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+
+    .step { display: none; }
+    .step.active { display: block; }
+
+    .step-meta {
+      font-size: 11px;
+      color: var(--muted-2);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 10px;
+    }
+
+    .question {
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 14px;
+      line-height: 1.5;
+    }
+
+    .example-list {
+      list-style: none;
+      margin-bottom: 16px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+      overflow: hidden;
+    }
+
+    .example-list li {
+      font-size: 13px;
+      color: var(--muted);
+      padding: 10px 14px;
+      line-height: 1.5;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .example-list li:last-child {
+      border-bottom: none;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .opt {
+      padding: 12px 16px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+      color: var(--text);
+      font-size: 14px;
+      text-align: left;
+      cursor: pointer;
+      line-height: 1.45;
+      transition: border-color .12s, background .12s;
+    }
+
+    .opt:hover {
+      border-color: var(--muted-2);
+      background: var(--hover);
+    }
+
+    .shortcut-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .shortcut {
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+      text-align: left;
+      cursor: pointer;
+      transition: border-color .12s, background .12s;
+    }
+
+    .shortcut:hover {
+      border-color: var(--muted-2);
+      background: var(--hover);
+    }
+
+    .shortcut-label {
+      font-size: 14px;
+      color: var(--text);
+      line-height: 1.4;
+      margin-bottom: 3px;
+      font-weight: 500;
+    }
+
+    .shortcut-meta {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .or-divider {
+      font-size: 12px;
+      color: var(--muted-2);
+      margin: 6px 0 12px;
+    }
+
+    .back-btn {
+      margin-top: 16px;
+      font-size: 13px;
+      color: var(--muted-2);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      text-decoration: underline;
+    }
+
+    .card {
+      border-radius: 10px;
+      border: 1.5px solid;
+      padding: 20px;
+    }
+
+    .card.strategy {
+      background: var(--strategy-bg);
+      border-color: var(--strategy-border);
+    }
+
+    .card.content {
+      background: var(--content-bg);
+      border-color: var(--content-border);
+    }
+
+    .card.ops {
+      background: var(--ops-bg);
+      border-color: var(--ops-border);
+    }
+
+    .tool-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
+
+    .card.strategy .tool-label { color: var(--strategy-label); }
+    .card.content .tool-label { color: var(--content-label); }
+    .card.ops .tool-label { color: var(--ops-label); }
+
+    .folder-name {
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 10px;
+      line-height: 1.3;
+    }
+
+    .result-desc {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.55;
+      margin-bottom: 14px;
+    }
+
+    .rules {
+      list-style: none;
+      margin-bottom: 14px;
+    }
+
+    .rules li {
+      font-size: 13px;
+      color: #5f5e5a;
+      padding: 3px 0 3px 14px;
+      position: relative;
+      line-height: 1.45;
+    }
+
+    .rules li::before {
+      content: '·';
+      position: absolute;
+      left: 0;
+      color: #b4b2a9;
+    }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 6px;
+    }
+
+    .primary-btn {
+      font-size: 12px;
+      padding: 8px 14px;
+      border-radius: 6px;
+      border: 1px solid var(--border-strong);
+      background: var(--surface);
+      cursor: pointer;
+      color: var(--text);
+      transition: border-color .12s, background .12s;
+    }
+
+    .primary-btn:hover {
+      border-color: var(--muted-2);
+      background: var(--hover);
+    }
+
+    .copied {
+      font-size: 12px;
+      color: var(--muted);
+      opacity: 0;
+      transition: opacity .2s;
+    }
+
+    .copied.show { opacity: 1; }
+
+    .restart-btn {
+      font-size: 12px;
+      padding: 7px 13px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      cursor: pointer;
+      color: var(--muted);
+      transition: border-color .12s;
+      margin-top: 14px;
+    }
+
+    .restart-btn:hover { border-color: var(--muted-2); }
+
+    .defaults {
+      margin-top: 16px;
+      padding: 12px 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    .defaults-title {
+      font-size: 12px;
+      font-weight: 500;
+      color: #5f5e5a;
+      margin-bottom: 7px;
+    }
+
+    .defaults ul { list-style: none; }
+
+    .defaults li {
+      font-size: 12px;
+      color: var(--muted-2);
+      padding: 2px 0 2px 12px;
+      position: relative;
+      line-height: 1.45;
+    }
+
+    .defaults li::before {
+      content: '·';
+      position: absolute;
+      left: 0;
+    }
+
+    .footer {
+      margin-top: 14px;
+      font-size: 12px;
+      color: #b4b2a9;
+      padding-top: 12px;
+      border-top: 1px solid #e8e7e1;
+      line-height: 1.5;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #1c1c1a;
+        --surface: #2c2c2a;
+        --text: #d3d1c7;
+        --muted: #888780;
+        --muted-2: #888780;
+        --border: #444441;
+        --border-strong: #5f5e5a;
+        --hover: #343432;
+
+        --strategy-bg: #2e260e;
+        --strategy-border: #8a6520;
+        --strategy-label: #e9c46a;
+
+        --content-bg: #0d2b1c;
+        --content-border: #2d7a52;
+        --content-label: #52b788;
+
+        --ops-bg: #0e1a33;
+        --ops-border: #3a5fa8;
+        --ops-label: #7b9cda;
+      }
+
+      .rules li { color: #888780; }
+      .rules li::before { color: #73726c; }
+      .defaults-title { color: #888780; }
+      .footer {
+        color: #5f5e5a;
+        border-top-color: #2c2c2a;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Which project?</h1>
+    <p class="subtitle">Use a shortcut if the task is obvious. Otherwise go through the questions.</p>
+
+    <div id="s0" class="step active">
+      <p class="step-meta">Quick start</p>
+      <p class="question">Common tasks</p>
+      <div class="shortcut-grid">
+        <button class="shortcut" onclick="go('result-strategy')">
+          <div class="shortcut-label">Marketing plan</div>
+          <div class="shortcut-meta">Goals, priorities, timing, budget, channel mix</div>
+        </button>
+        <button class="shortcut" onclick="go('result-content')">
+          <div class="shortcut-label">Email brainstorm</div>
+          <div class="shortcut-meta">Angles, sequence, subject lines, messaging direction</div>
+        </button>
+        <button class="shortcut" onclick="go('result-ops')">
+          <div class="shortcut-label">SEO brief</div>
+          <div class="shortcut-meta">Keyword target, page intent, structure, internal links</div>
+        </button>
+        <button class="shortcut" onclick="go('result-ops')">
+          <div class="shortcut-label">SOP</div>
+          <div class="shortcut-meta">Process, checklist, repeatable instructions, policy</div>
+        </button>
+        <button class="shortcut" onclick="go('result-content')">
+          <div class="shortcut-label">Caption</div>
+          <div class="shortcut-meta">Customer-facing copy for Instagram or another channel</div>
+        </button>
+      </div>
+      <p class="or-divider">Or use the decision tree</p>
+      <div class="options">
+        <button class="opt" onclick="go('s1')">Start question flow</button>
+      </div>
+    </div>
+
+    <div id="s1" class="step">
+      <p class="step-meta">Step 1 of 3</p>
+      <p class="question">Are you trying to decide what to do?</p>
+      <ul class="example-list">
+        <li>Should I run this campaign?</li>
+        <li>What should I prioritise this month?</li>
+        <li>Is this worth a paid push?</li>
+        <li>What do these numbers mean?</li>
+      </ul>
+      <div class="options">
+        <button class="opt" onclick="go('result-strategy')">Yes → Strategy</button>
+        <button class="opt" onclick="go('s2')">No</button>
+      </div>
+      <button class="back-btn" onclick="goBack()">Back</button>
+    </div>
+
+    <div id="s2" class="step">
+      <p class="step-meta">Step 2 of 3</p>
+      <p class="question">Are you creating customer-facing copy or messaging?</p>
+      <ul class="example-list">
+        <li>Email campaigns, subject lines, welcome flows</li>
+        <li>Captions, carousel copy, Reel scripts, hooks</li>
+        <li>Product descriptions, landing page copy, ad copy</li>
+        <li>Blog drafts, campaign angles, CTAs</li>
+      </ul>
+      <div class="options">
+        <button class="opt" onclick="go('result-content')">Yes → Content</button>
+        <button class="opt" onclick="go('s3')">No</button>
+      </div>
+      <button class="back-btn" onclick="goBack()">Back</button>
+    </div>
+
+    <div id="s3" class="step">
+      <p class="step-meta">Step 3 of 3</p>
+      <p class="question">Are you building a process, SEO asset, or implementation task?</p>
+      <ul class="example-list">
+        <li>SOPs, checklists, workflows, templates</li>
+        <li>Customer service replies, warranty flows, policies</li>
+        <li>Keyword maps, SEO briefs, internal linking plans</li>
+        <li>Shopify edits, page structure, UX fixes</li>
+      </ul>
+      <div class="options">
+        <button class="opt" onclick="go('result-ops')">Yes → Ops + SEO</button>
+        <button class="opt" onclick="go('s-mixed')">It is mixed</button>
+      </div>
+      <button class="back-btn" onclick="goBack()">Back</button>
+    </div>
+
+    <div id="s-mixed" class="step">
+      <p class="step-meta">Mixed task</p>
+      <p class="question">What comes first?</p>
+      <div class="options">
+        <button class="opt" onclick="go('result-strategy')">I need to decide whether, why, or when first</button>
+        <button class="opt" onclick="go('result-content')">I need to write what the customer sees first</button>
+        <button class="opt" onclick="go('result-ops')">I need to build the structure, process, or SEO setup first</button>
+      </div>
+      <button class="back-btn" onclick="goBack()">Back</button>
+    </div>
+
+    <div id="result-strategy" class="step">
+      <div class="card strategy">
+        <p class="tool-label">Use this project</p>
+        <p class="folder-name">MISSA &amp; KISSA | Strategy</p>
+        <p class="result-desc">Use this when the output is a direction or decision rather than a deliverable.</p>
+        <ul class="rules">
+          <li>Marketing plans, priorities, campaign logic</li>
+          <li>Pricing, offers, bundles, product decisions</li>
+          <li>Performance review, KPI analysis, budget allocation</li>
+        </ul>
+        <div class="actions">
+          <button class="primary-btn" onclick="copyProject('MISSA & KISSA | Strategy', 'copied-strategy')">Copy project name</button>
+          <span class="copied" id="copied-strategy" aria-live="polite">Copied</span>
+        </div>
+      </div>
+      <button class="restart-btn" onclick="resetFlow()">Start over</button>
+      <button class="back-btn" onclick="goBack()">Back</button>
+    </div>
+
+    <div id="result-content" class="step">
+      <div class="card content">
+        <p class="tool-label">Use this project</p>
+        <p class="folder-name">MISSA &amp; KISSA | Content</p>
+        <p class="result-desc">Use this when you are creating customer-facing writing, messaging, or creative copy.</p>
+        <ul class="rules">
+          <li>Email campaigns, subject lines, welcome flows</li>
+          <li>Captions, blogs, product descriptions, landing pages</li>
+          <li>Campaign angles, ad copy, hooks, CTAs</li>
+        </ul>
+        <div class="actions">
+          <button class="primary-btn" onclick="copyProject('MISSA & KISSA | Content', 'copied-content')">Copy project name</button>
+          <span class="copied" id="copied-content" aria-live="polite">Copied</span>
+        </div>
+      </div>
+      <button class="restart-btn" onclick="resetFlow()">Start over</button>
+      <button class="back-btn" onclick="goBack()">Back</button>
+    </div>
+
+    <div id="result-ops" class="step">
+      <div class="card ops">
+        <p class="tool-label">Use this project</p>
+        <p class="folder-name">MISSA &amp; KISSA | Ops + SEO</p>
+        <p class="result-desc">Use this when the output is a system, repeatable asset, SEO structure, or implementation task.</p>
+        <ul class="rules">
+          <li>SOPs, templates, policies, workflows, checklists</li>
+          <li>Keyword maps, SEO briefs, metadata, internal links</li>
+          <li>Shopify edits, page structure, technical setup</li>
+        </ul>
+        <div class="actions">
+          <button class="primary-btn" onclick="copyProject('MISSA & KISSA | Ops + SEO', 'copied-ops')">Copy project name</button>
+          <span class="copied" id="copied-ops" aria-live="polite">Copied</span>
+        </div>
+      </div>
+      <button class="restart-btn" onclick="resetFlow()">Start over</button>
+      <button class="back-btn" onclick="goBack()">Back</button>
+    </div>
+
+    <div class="defaults">
+      <p class="defaults-title">Quick defaults</p>
+      <ul>
+        <li>Decision first → Strategy</li>
+        <li>Writing first → Content</li>
+        <li>System, SEO, or implementation first → Ops + SEO</li>
+        <li>If mixed, choose the first meaningful thinking step</li>
+      </ul>
+    </div>
+
+    <p class="footer">Built to match the simpler structure and visual language of your reference file.</p>
+  </div>
+
+  <script>
+    const allSteps = ['s0', 's1', 's2', 's3', 's-mixed', 'result-strategy', 'result-content', 'result-ops'];
+    const historyStack = [];
+
+    function showStep(id) {
+      allSteps.forEach(stepId => {
+        const el = document.getElementById(stepId);
+        if (el) el.classList.remove('active');
+      });
+      const target = document.getElementById(id);
+      if (target) target.classList.add('active');
+    }
+
+    function getCurrentStep() {
+      return document.querySelector('.step.active')?.id || null;
+    }
+
+    function go(id) {
+      const current = getCurrentStep();
+      if (current && current !== id) historyStack.push(current);
+      showStep(id);
+    }
+
+    function goBack() {
+      const previous = historyStack.pop();
+      if (previous) showStep(previous);
+    }
+
+    function resetFlow() {
+      historyStack.length = 0;
+      showStep('s0');
+    }
+
+    function copyProject(name, copiedId) {
+      navigator.clipboard.writeText(name).then(() => {
+        const tag = document.getElementById(copiedId);
+        if (!tag) return;
+        tag.classList.add('show');
+        setTimeout(() => tag.classList.remove('show'), 2000);
+      }).catch(() => {
+        const tag = document.getElementById(copiedId);
+        if (!tag) return;
+        tag.textContent = 'Copy failed';
+        tag.classList.add('show');
+        setTimeout(() => {
+          tag.classList.remove('show');
+          tag.textContent = 'Copied';
+        }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>
